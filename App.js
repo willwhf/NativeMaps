@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 import * as Location from 'expo-location';
-import MapView, { Marker } from 'react-native-maps'
+import MapView, { Marker, Polyline } from 'react-native-maps'
 import React from 'react';
 
 export default class App extends React.Component {
@@ -79,6 +79,11 @@ export default class App extends React.Component {
                 coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
               />
             ))}
+            <Polyline
+              coordinates={positions}
+              strokeColor="blue"
+              strokeWidth={2}
+            />
           </MapView>
         </View >
       )
