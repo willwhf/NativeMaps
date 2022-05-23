@@ -1,17 +1,18 @@
+import MapView, { Marker, Polyline } from 'react-native-maps'
 import { Text, View } from 'react-native';
 import * as Location from 'expo-location';
-import MapView, { Marker, Polyline } from 'react-native-maps'
 import React from 'react';
 
 export default class App extends React.Component {
   state = {
-    position: {
+    status: Boolean,
+    initialPosition: {
       latitude: -16.47174293488215,
       longitude: -48.723814049503794,
       latitudeDelta: 40.9,
       longitudeDelta: 40.4
     },
-    positions: [
+    arrayPositions: [
       { latitude: -31.76260634872427, longitude: -52.32935242161718 },
       { latitude: -31.759057804342657, longitude: -52.31733612520161 },
       { latitude: -31.757288042395366, longitude: -52.30789474947888 },
@@ -25,27 +26,18 @@ export default class App extends React.Component {
       { latitude: -31.768412929030063, longitude: -52.22715132117129 },
 
     ],
-    status: Boolean
   }
 
   async componentDidMount() {
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      this.setState({
-        status: false
-      })
-      return;
-    } else {
-      this.setState({
-        status: true
-      })
-    }
+    if (status !== 'granted') { this.setState({ status: false }) 
+    return;
+    } else { this.setState({ status: true }) }
 
     if (this.state.status == true) {
       const location = await Location.getCurrentPositionAsync({});
-      // console.log(location)
       this.setState({
-        position: {
+        initialPosition: {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
           latitudeDelta: 0.0922,
@@ -56,36 +48,25 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { position, positions, status } = this.state
+    const { initialPosition, arrayPositions, status } = this.state
 
     if (status == true) {
       return (
         <View style={{ flex: 1, marginTop: 32 }}>
-          <MapView
-            style={{ flex: 1 }}
-            showsUserLocation={true}
-            userLocationPriority='high'
-            userLocationUpdateInterval={3000}
+          <MapView style={{ flex: 1 }} showsUserLocation={true} userLocationPriority='high' userLocationUpdateInterval={3000}
             initialRegion={{
               latitude: position.latitude,
               longitude: position.longitude,
               latitudeDelta: position.latitudeDelta,
               longitudeDelta: position.longitudeDelta
-            }}
-          >
+            }}>
             {positions.map((marker, index) => (
-              <Marker
-                key={index}
-                coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-              />
+              <Marker key={index} coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}/>
             ))}
-            <Polyline
-              coordinates={positions}
-              strokeColor="blue"
-              strokeWidth={2}
-            />
+
+            <Polyline coordinates={positions} strokeColor="blue" strokeWidth={2}/>
           </MapView>
-        </View >
+        </View>
       )
     } else {
       return (
@@ -94,6 +75,5 @@ export default class App extends React.Component {
         </View>
       )
     }
-
   }
 }
